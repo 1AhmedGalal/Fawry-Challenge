@@ -1,33 +1,21 @@
 package com.delivery;
 
-import com.customer.Customer;
 import com.product.base.Expirable;
 import com.product.base.Product;
-import com.product.base.Shippable;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 public class Cart {
 
-    private ArrayList<String> errors;
-    private ArrayList<Product> boughtProducts;
-    private ArrayList<String> receiptItems;
+    private ArrayList<String> cartErrors;
+    private ArrayList<CartItem> cartItems;
     private Shop shop;
-    private double subtotal;
-    private double shippingFees;
-    private Customer customer;
 
-    public Cart(Customer costumer) {
-        this.shop = new Shop();
-        this.shop.loadAvailableProducts();
-        this.shop.displayShopProducts();
-        this.errors = new ArrayList<>();
-        this.boughtProducts = new ArrayList<>();
-        this.receiptItems = new ArrayList<>();
-        this.subtotal = 0.0;
-        this.shippingFees = 0.0;
-        this.customer = costumer;
+    public Cart(Shop shop) {
+        this.shop = shop;
+        this.cartErrors = new ArrayList<>();
+        this.cartItems = new ArrayList<>();
     }
 
     public void add(int index, int takenQuantity) throws ServiceException {
@@ -38,12 +26,12 @@ public class Cart {
             int actualTakenQuantity = shop.takeProduct(index, takenQuantity);
 
             if(actualTakenQuantity < takenQuantity)
-                errors.add("Couldn't Take " + takenQuantity + " from " + product.getName() + " so you got only " + actualTakenQuantity);
+                cartErrors.add("Couldn't Take " + takenQuantity + " from " + product.getName() + " so you got only " + actualTakenQuantity);
 
             takenQuantity = actualTakenQuantity;
 
         } catch (Exception e){
-            errors.add(e.getMessage());
+            cartErrors.add(e.getMessage());
             return;
         }
 
@@ -52,64 +40,24 @@ public class Cart {
             Date now = new Date();
 
             if (expiringDate.before(now)) {
-                errors.add(product.getName() + " has already expired");
+                cartErrors.add(product.getName() + " has already expired");
                 return;
             }
         }
 
-        double tmpSubTotal = product.getPrice() * takenQuantity;
-        double tmpFee = 0.0;
-
-        //this is assumed fee of 100 EGP on each unit of weight
-        if(product instanceof Shippable)
-            tmpFee += ((Shippable) product).getWeight() * 100.0 * takenQuantity;
-
-        try{
-            customer.setBalance(customer.getBalance() - tmpSubTotal - tmpFee);
-        }
-        catch (Exception e){
-            errors.add("Customer Doesn't Have Enough Money To Buy " + takenQuantity + " units from "+ product.getName());
+        if(takenQuantity == 0)
             return;
-        }
 
-        subtotal += tmpSubTotal;
-        shippingFees += tmpFee;
-
-        boughtProducts.add(product);
-        receiptItems.add(takenQuantity + "x\t" + product.getName() + "\t" + product.getPrice() * takenQuantity);
+        CartItem cartItem = new CartItem(takenQuantity, product, product.getPrice() * takenQuantity);
+        cartItems.add(cartItem);
     }
 
-    public ShippingService getShippingService(){
-
-        ArrayList<Shippable> shippables = new ArrayList<>();
-
-        for(Product product : boughtProducts){
-            if(product instanceof Shippable){
-                shippables.add((Shippable) product);
-            }
-        }
-
-        return new ShippingService(shippables);
-
+    public ArrayList<CartItem> getCartItems() {
+        return cartItems;
     }
 
-    public ArrayList<String> getReceiptItems() {
-        return receiptItems;
+    public ArrayList<String> getCartErrors() {
+        return cartErrors;
     }
 
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public ArrayList<String> getErrors() {
-        return errors;
-    }
-
-    public double getSubtotal() {
-        return subtotal;
-    }
-
-    public double getShippingFees() {
-        return shippingFees;
-    }
 }

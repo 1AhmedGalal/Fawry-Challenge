@@ -1,7 +1,8 @@
 import com.customer.Customer;
 import com.delivery.Cart;
-import com.delivery.ServiceException;
+import com.delivery.CartItem;
 import com.delivery.ShippingService;
+import com.delivery.Shop;
 import com.product.base.Shippable;
 
 import java.util.ArrayList;
@@ -10,63 +11,90 @@ import java.util.ArrayList;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
-    public static void checkout(Cart cart){
+    static ArrayList<CartItem> cartItems = null;
+    static double subtotal = 0;
+    static double shippingFees = 0;
+    static final double SHIPPING_PRICE = 100.64;
 
+    public static void checkout(Cart cart, Customer customer) {
 
         System.out.println("Errors Made By User While Adding To Cart: ");
 
-        var errors = cart.getErrors();
+        var errors = cart.getCartErrors();
+        cartItems = cart.getCartItems();
 
-        if(cart.getSubtotal() == 0)
-            errors.add("Cart IS EMPTY!!!!!!!!!!!!!!!");
+        if(cartItems.isEmpty())
+            errors.add("Cart IS EMPTY!!");
+
+        int idx = 0;
+        while(idx < cartItems.size()){
+            var item = cartItems.get(idx++);
+
+            try{
+                customer.setBalance(customer.getBalance() - item.getTotalPrice());
+                if(item.getProduct() instanceof Shippable)
+                    customer.setBalance(customer.getBalance() - ((Shippable) item.getProduct()).getWeight() * SHIPPING_PRICE);
+            }
+            catch (Exception e){
+
+                errors.add("Customer Can't Buy " + item.getQuantityBought() + " Items from " + item.getProduct().getName()
+                            + " Because Customer Has " + customer.getBalance() +" Now, And That Item Needs More");
+
+                cartItems.remove(item);
+                --idx;
+
+            }
+        }
 
         if(!errors.isEmpty())
             for(String error : errors)
                 System.out.println(error);
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        ShippingService shippingService = cart.getShippingService();
-        var shippables = shippingService.getShippables();
-        double totalWeight = 0;
 
-        if(!shippables.isEmpty()){
-            for (Shippable shippable : shippables){
-                System.out.println("Shipping: " + shippable.getName() + " [Weight = " + shippable.getWeight() + "g]");
-                totalWeight += shippable.getWeight();
-                System.out.println();
+        ArrayList<Shippable> shippables = new ArrayList<>();
+        for(var item : cartItems)
+        {
+            subtotal += item.getTotalPrice();
+
+            if(item.getProduct() instanceof Shippable){
+                shippingFees += ((Shippable) item.getProduct()).getWeight() * SHIPPING_PRICE * item.getQuantityBought();
+                shippables.add((Shippable) item.getProduct());
             }
         }
 
-        System.out.println("Total Delivered Weight = " + totalWeight / 1000.0 + "kg");
-        System.out.println("All Products Are Delivered :)");
+        ShippingService shippingService = new ShippingService(shippables);
+        shippingService.performShipping();
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+
         System.out.println("Receipt: ");
-        ArrayList<String> receipt = cart.getReceiptItems();
-        for(String item : receipt)
-            System.out.println(item);
 
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        double subtotal = cart.getSubtotal();
-        double shippingFees = cart.getShippingFees();
+        for(var item : cartItems) {
+            System.out.println(item.toString());
+        }
+        System.out.println();
+
         double totalPaid = subtotal + shippingFees;
         System.out.println("subtotal = " + subtotal);
         System.out.println("shipping Fees = " + shippingFees);
         System.out.println("Total Paid = " + totalPaid);
-        System.out.println("Remaining Customer Balance = " + cart.getCustomer().getBalance());
+        System.out.println("Remaining Customer Balance = " + customer.getBalance());
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-
-
     }
 
     public static void main(String[] args) {
 
         try {
 
-            Customer customer = new Customer(222635.25);
-            Cart cart = new Cart(customer);
+            Customer customer = new Customer(213999);
 
+            Shop shop = new Shop();
+            shop.loadAvailableProducts();
+            shop.displayShopProducts();
+
+            Cart cart = new Cart(shop);
             cart.add(1, 1);
             cart.add(2, 50);
             cart.add(2, 1);
@@ -75,8 +103,7 @@ public class Main {
             cart.add(7, 2);
             cart.add(8, 3);
 
-            checkout(cart);
-
+            checkout(cart, customer);
 
         } catch (Exception e){
             System.out.println(e.getMessage());

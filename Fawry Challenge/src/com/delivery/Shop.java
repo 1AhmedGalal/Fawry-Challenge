@@ -9,7 +9,7 @@ import com.product.base.Shippable;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-class Shop {
+public class Shop {
 
     // I Am Assuming This Class Will be Used by Customers Only
     // So, I didn't Add a add product that should be used by vendors
@@ -35,25 +35,25 @@ class Shop {
 
         try {
             calendar.set(2026, Calendar.JANUARY, 1);
-            shopProducts.add(new ShippableExpirableProduct("Biscuits - Molto", 10.0, 50, calendar2.getTime(), 10));
+            shopProducts.add(new Biscuits("Molto", 10.0, 50, calendar2.getTime(), 10));
             calendar.set(2026, Calendar.JUNE, 1);
-            shopProducts.add(new ShippableExpirableProduct("Biscuits - Ulker", 8.0, 30, calendar.getTime(), 5));
+            shopProducts.add(new Biscuits("Ulker", 8.0, 30, calendar.getTime(), 5));
 
             calendar.set(2025, Calendar.SEPTEMBER, 15);
-            shopProducts.add(new ShippableExpirableProduct("Cheese - Domty", 25.0, 20, calendar.getTime(), 5.6));
+            shopProducts.add(new Cheese("Domty", 25.0, 20, 0.5, calendar.getTime()));
             calendar.set(2025, Calendar.DECEMBER, 10);
-            shopProducts.add(new ShippableExpirableProduct("Cheese - Maraa'y", 30.0, 15, calendar.getTime(), 99.2));
+            shopProducts.add(new Cheese("Maraa'y", 30.0, 15, 0.4, calendar.getTime()));
 
-            shopProducts.add(new ShippableProduct("Mobile - Samsung", 18000.0, 10, 0.3));
-            shopProducts.add(new ShippableProduct("Mobile - Xiaomi", 12000.0, 1, 0.32));
+            shopProducts.add(new Mobile("Samsung", 18000.0, 10, 0.3));
+            shopProducts.add(new Mobile("Xiaomi", 12000.0, 1, 0.32));
 
             calendar.set(2026, Calendar.JANUARY, 15);
-            shopProducts.add(new ExpirableProduct("Vodafone scratch", 10.0, 100, calendar.getTime()));
+            shopProducts.add(new MobileScratchCard("Vodafone scratch", 10.0, 100, calendar.getTime()));
             calendar.set(2026, Calendar.FEBRUARY, 10);
-            shopProducts.add(new ExpirableProduct("Etisalat scratch", 25.0, 80, calendar.getTime()));
+            shopProducts.add(new MobileScratchCard("Etisalat scratch", 25.0, 80, calendar.getTime()));
 
-            shopProducts.add(new ShippableProduct("TV - LG", 12500.0, 5, 1007.5));
-            shopProducts.add(new ShippableProduct("TV - Tornado", 800000.0, 6, 1006.2));
+            shopProducts.add(new TV("LG", 12500.0, 5, 1007.5));
+            shopProducts.add(new TV("Tornado", 8000.0, 6, 1006.2));
 
         } catch (ProductException e) {
             System.err.println("Error adding products: " + e.getMessage());

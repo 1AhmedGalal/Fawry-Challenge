@@ -5,12 +5,12 @@ import com.product.base.*;
 import java.util.Calendar;
 import java.util.Date;
 
-public class ShippableExpirableProduct extends Product implements Shippable, Expirable {
+public class Biscuits extends Product implements Shippable, Expirable {
 
     private Date expiringDate;
     private double weight;
 
-    public ShippableExpirableProduct(String name, double price, int quantity, Date expiringDate, double weight) throws ProductException {
+    public Biscuits(String name, double price, int quantity, Date expiringDate, double weight) throws ProductException {
         super(name, price, quantity);
         setExpiringDate(expiringDate);
         setWeight(weight);
@@ -21,9 +21,7 @@ public class ShippableExpirableProduct extends Product implements Shippable, Exp
     }
 
     public void setWeight(double weight) throws ProductException {
-        double maxWeight = 5000.0;
-        double minWeight = 0.1;
-        DataChecker.check(weight, minWeight, maxWeight);
+        DataChecker.check(weight, 0.1, 10);
         this.weight = weight;
     }
 
