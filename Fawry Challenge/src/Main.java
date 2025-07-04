@@ -12,8 +12,13 @@ public class Main {
 
     public static void checkout(Cart cart){
 
+
         System.out.println("Errors Made By User While Adding To Cart: ");
+
         var errors = cart.getErrors();
+        if(cart.getSubtotal() == 0)
+            errors.add("Cart IS EMPTY!!!!!!!!!!!!!!!");
+
         if(!errors.isEmpty())
             for(String error : errors)
                 System.out.println(error);
