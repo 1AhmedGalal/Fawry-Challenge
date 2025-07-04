@@ -17,7 +17,7 @@ public class TV extends Product implements Shippable {
     public void setWeight(double weight) throws ProductException {
 
         //assuming ranges
-        DataChecker.check(weight, 0.1, 50);
+        DataChecker.check(weight, 0.1, 5000);
 
         this.weight = weight;
     }

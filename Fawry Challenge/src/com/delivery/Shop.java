@@ -48,12 +48,12 @@ class Shop {
             shopProducts.add(new Mobile("Xiaomi", 12000.0, 1, 0.32));
 
             calendar.set(2026, Calendar.JANUARY, 15);
-            shopProducts.add(new MobileScratchCard("Vodafone", 10.0, 100, calendar.getTime()));
+            shopProducts.add(new MobileScratchCard("Vodafone scratch", 10.0, 100, calendar.getTime()));
             calendar.set(2026, Calendar.FEBRUARY, 10);
-            shopProducts.add(new MobileScratchCard("Etisalat", 25.0, 80, calendar.getTime()));
+            shopProducts.add(new MobileScratchCard("Etisalat scratch", 25.0, 80, calendar.getTime()));
 
-            shopProducts.add(new TV("LG", 12500.0, 5, 7.5));
-            shopProducts.add(new TV("Tornado", 8000.0, 6, 6.2));
+            shopProducts.add(new TV("LG", 12500.0, 5, 1007.5));
+            shopProducts.add(new TV("Tornado", 8000.0, 6, 1006.2));
 
         } catch (ProductException e) {
             System.err.println("Error adding products: " + e.getMessage());

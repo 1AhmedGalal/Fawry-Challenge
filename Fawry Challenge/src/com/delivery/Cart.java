@@ -32,7 +32,6 @@ public class Cart {
         this.shop = new Shop();
         this.shop.loadAvailableProducts();
         this.shop.displayShopProducts();
-
         this.errors = new ArrayList<>();
         this.boughtProducts = new ArrayList<>();
         this.receiptItems = new ArrayList<>();
@@ -55,6 +54,7 @@ public class Cart {
 
         } catch (Exception e){
             errors.add(e.getMessage());
+            return;
         }
 
         if(product instanceof Expirable){
@@ -63,25 +63,27 @@ public class Cart {
 
             if (expiringDate.before(now)) {
                 errors.add(product.getName() + " has already expired");
+                return;
             }
         }
 
         double tmpSubTotal = product.getPrice() * takenQuantity;
-        double tmpFee = 0;
+        double tmpFee = 0.0;
 
         //this is assumed fee of 100 EGP on each unit of weight
         if(product instanceof Shippable)
             tmpFee += ((Shippable) product).getWeight() * 100.0;
 
-        subtotal += tmpSubTotal;
-        shippingFees += tmpFee;
-
         try{
             customer.setBalance(customer.getBalance() - tmpSubTotal - tmpFee);
         }
         catch (Exception e){
-            errors.add("Customer Doesn't Have Enough Money To Buy " + takenQuantity + " units from"+ product.getName());
+            errors.add("Customer Doesn't Have Enough Money To Buy " + takenQuantity + " units from "+ product.getName());
+            return;
         }
+
+        subtotal += tmpSubTotal;
+        shippingFees += tmpFee;
 
         boughtProducts.add(product);
         receiptItems.add(takenQuantity + "x\t" + product.getName() + "\t" + product.getPrice() * takenQuantity);

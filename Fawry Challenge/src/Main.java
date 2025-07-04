@@ -41,7 +41,7 @@ public class Main {
 
         try {
 
-            Customer customer = new Customer(24128);
+            Customer customer = new Customer(222615.25);
             Cart cart = new Cart(customer);
 
             cart.add(1, 1);
@@ -49,7 +49,8 @@ public class Main {
             cart.add(2, 1);
             cart.add(9, 1);
             cart.add(10, 1);
-            cart.add(7, 1);
+            cart.add(7, 2);
+            
             checkout(cart);
 
 
