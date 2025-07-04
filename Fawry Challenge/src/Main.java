@@ -1,6 +1,8 @@
 import com.customer.Customer;
 import com.delivery.Cart;
+import com.delivery.ServiceException;
 import com.delivery.ShippingService;
+import com.product.base.Shippable;
 
 import java.util.ArrayList;
 
@@ -10,15 +12,30 @@ public class Main {
 
     public static void checkout(Cart cart){
 
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         System.out.println("Errors Made By User While Adding To Cart: ");
-        cart.printErrors();
+        var errors = cart.getErrors();
+        if(!errors.isEmpty())
+            for(String error : errors)
+                System.out.println(error);
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         ShippingService shippingService = cart.getShippingService();
-        shippingService.deliverAll();
+        var shippables = shippingService.getShippables();
+        double totalWeight = 0;
+
+        if(!shippables.isEmpty()){
+            for (Shippable shippable : shippables){
+                System.out.println("Shipping: " + shippable.getName() + " [Weight = " + shippable.getWeight() + "g]");
+                totalWeight += shippable.getWeight();
+                System.out.println();
+            }
+        }
+
+        System.out.println("Total Delivered Weight = " + totalWeight / 1000.0 + "kg");
+        System.out.println("All Products Are Delivered :)");
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        System.out.println("Receipt: ");
         ArrayList<String> receipt = cart.getReceiptItems();
         for(String item : receipt)
             System.out.println(item);
@@ -50,7 +67,7 @@ public class Main {
             cart.add(9, 1);
             cart.add(10, 1);
             cart.add(7, 2);
-            
+
             checkout(cart);
 
 

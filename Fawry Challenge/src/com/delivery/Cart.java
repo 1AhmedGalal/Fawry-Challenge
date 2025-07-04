@@ -11,22 +11,12 @@ import java.util.Date;
 public class Cart {
 
     private ArrayList<String> errors;
-
     private ArrayList<Product> boughtProducts;
     private ArrayList<String> receiptItems;
-
     private Shop shop;
     private double subtotal;
     private double shippingFees;
     private Customer customer;
-
-    public double getSubtotal() {
-        return subtotal;
-    }
-
-    public double getShippingFees() {
-        return shippingFees;
-    }
 
     public Cart(Customer costumer) {
         this.shop = new Shop();
@@ -111,11 +101,15 @@ public class Cart {
         return customer;
     }
 
-    public void printErrors(){
-        if(errors.isEmpty())
-            return;
+    public ArrayList<String> getErrors() {
+        return errors;
+    }
 
-        for(String error : errors)
-            System.out.println(error);
+    public double getSubtotal() {
+        return subtotal;
+    }
+
+    public double getShippingFees() {
+        return shippingFees;
     }
 }
