@@ -23,9 +23,12 @@ public class ShippingService
                 totalWeight += shippable.getWeight();
                 System.out.println();
             }
+
+            System.out.println("Total Delivered Weight = " + totalWeight / 1000.0 + "kg");
+            System.out.println("All Products Are Delivered :)");
         }
 
-        System.out.println("Total Delivered Weight = " + totalWeight / 1000.0 + "kg");
-        System.out.println("All Products Are Delivered :)");
+        System.out.println("NOTHING TO BE DELIVERED!");
+
     }
 }
