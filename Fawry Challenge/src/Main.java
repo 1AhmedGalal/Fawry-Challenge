@@ -93,7 +93,7 @@ public class Main {
             Shop shop = new Shop();
             shop.loadAvailableProducts();
             shop.displayShopProducts();
-
+            shop.takeProduct(1, 1);
             Cart cart = new Cart(shop);
             cart.add(1, 1);
             cart.add(2, 50);
