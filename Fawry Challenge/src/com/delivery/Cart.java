@@ -62,7 +62,7 @@ public class Cart {
 
         //this is assumed fee of 100 EGP on each unit of weight
         if(product instanceof Shippable)
-            tmpFee += ((Shippable) product).getWeight() * 100.0;
+            tmpFee += ((Shippable) product).getWeight() * 100.0 * takenQuantity;
 
         try{
             customer.setBalance(customer.getBalance() - tmpSubTotal - tmpFee);
