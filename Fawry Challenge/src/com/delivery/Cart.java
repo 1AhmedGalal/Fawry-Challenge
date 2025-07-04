@@ -17,7 +17,7 @@ public class Cart {
         this.cartItems = new ArrayList<>();
     }
 
-    private int takeProduct(Product product, int takenQuantity) throws Exception{
+    private int addProductHelper(Product product, int takenQuantity) throws Exception{
         int finalTaken = takenQuantity;
 
         try {
@@ -46,7 +46,7 @@ public class Cart {
     public void add(Product product, int takenQuantity) throws ServiceException {
 
         try {
-            int actualTakenQuantity = takeProduct(product, takenQuantity);
+            int actualTakenQuantity = addProductHelper(product, takenQuantity);
 
             if(actualTakenQuantity < takenQuantity)
                 cartErrors.add("Couldn't Take " + takenQuantity + " from " + product.getName() + " so you got only " + actualTakenQuantity);
