@@ -32,7 +32,7 @@ public abstract class Product
     public void setPrice(double price) throws ProductException {
 
         //assuming that we are not selling very expensive products
-        DataChecker.check(price, 0.1, 1e5);
+        DataChecker.check(price, 0.1, 1e8);
 
         this.price = price;
     }
