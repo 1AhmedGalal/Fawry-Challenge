@@ -1,8 +1,10 @@
 package com.delivery;
 
 import com.product.actual.*;
+import com.product.base.Expirable;
 import com.product.base.Product;
 import com.product.base.ProductException;
+import com.product.base.Shippable;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,9 +35,9 @@ class Shop {
 
         try {
             calendar.set(2026, Calendar.JANUARY, 1);
-            shopProducts.add(new Biscuits("Molto", 10.0, 50, calendar2.getTime()));
+            shopProducts.add(new Biscuits("Molto", 10.0, 50, calendar2.getTime(), 10));
             calendar.set(2026, Calendar.JUNE, 1);
-            shopProducts.add(new Biscuits("Ulker", 8.0, 30, calendar.getTime()));
+            shopProducts.add(new Biscuits("Ulker", 8.0, 30, calendar.getTime(), 5));
 
             calendar.set(2025, Calendar.SEPTEMBER, 15);
             shopProducts.add(new Cheese("Domty", 25.0, 20, 0.5, calendar.getTime()));
@@ -59,7 +61,6 @@ class Shop {
     }
 
     public void displayShopProducts() {
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         System.out.println("Available Products in the Shop :");
 
         int cnt = 1;
@@ -69,6 +70,13 @@ class Shop {
             System.out.println("Name     : " + product.getName());
             System.out.println("Price    : " + product.getPrice());
             System.out.println("Quantity : " + product.getQuantity());
+
+            if(product instanceof Expirable)
+                System.out.println("Expiring Date : " + ((Expirable) product).getExpiringDate());
+
+            if(product instanceof Shippable)
+                System.out.println("Weight : " + ((Shippable) product).getWeight());
+
             System.out.println("\n\n\n");
 
             cnt++;
@@ -77,21 +85,42 @@ class Shop {
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     }
 
-    public Product takeProduct(int index, int takenQuantity) throws ServiceException {
+    public Product getProductDetails(int index) throws ServiceException {
+        if(!(index >= 1 && index <= shopProducts.size()))
+            throw new ServiceException("Please Choose A Valid Product");
+
+        return shopProducts.get(index - 1);
+    }
+
+    public int takeProduct(int index, int takenQuantity) throws ServiceException {
 
         if(!(index >= 1 && index <= shopProducts.size()))
             throw new ServiceException("Please Choose A Valid Product");
 
+        int finalTaken = takenQuantity;
         Product product = shopProducts.get(index - 1);
 
         try {
             product.setQuantity(product.getQuantity() - takenQuantity);
         }
         catch (Exception e) {
-            throw new ServiceException("Sorry! No Enough Stock");
+            if(product.getQuantity() == 0)
+                throw new ServiceException("Sorry! Out Of Stock for " + product.getName());
+            else{
+
+                finalTaken = product.getQuantity();
+
+                try{
+                    product.setQuantity(0);
+                } catch (Exception e2){
+                    throw new ServiceException("Unexpected Error!!!!");
+                }
+
+            }
         }
 
-        return product;
+
+        return finalTaken;
     }
 
 }

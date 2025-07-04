@@ -44,7 +44,7 @@ public abstract class Product
     public void setQuantity(int quantity) throws ProductException {
 
         //assuming that we have limited storage area
-        DataChecker.check(quantity, 1, 1000);
+        DataChecker.check(quantity, 0, 1000);
 
         this.quantity = quantity;
     }
