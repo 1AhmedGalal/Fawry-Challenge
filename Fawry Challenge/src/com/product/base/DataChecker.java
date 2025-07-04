@@ -23,7 +23,7 @@ public final class DataChecker {
 
     public static void check(Date date, Date maxDate) throws ProductException {
         long now = new Date().getTime();
-        if (date == null || date.getTime() < now || date.getTime() > maxDate.getTime())
+        if (date == null || date.getTime() > maxDate.getTime())
             throw new ProductException("Date must be between today and " + maxDate);
     }
 

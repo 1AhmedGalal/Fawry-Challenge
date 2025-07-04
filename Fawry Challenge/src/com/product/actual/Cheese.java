@@ -27,7 +27,7 @@ public class Cheese extends Product implements Shippable, Expirable {
         calendar.add(Calendar.YEAR, 1);
         Date maxDate = calendar.getTime();
         DataChecker.check(expiringDate, maxDate);
-        
+
         this.expiringDate = expiringDate;
     }
 
