@@ -85,42 +85,10 @@ public class Shop {
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     }
 
-    public Product getProductDetails(int index) throws ServiceException {
+    public Product getProduct(int index) throws ServiceException {
         if(!(index >= 1 && index <= shopProducts.size()))
             throw new ServiceException("Please Choose A Valid Product");
 
         return shopProducts.get(index - 1);
     }
-
-    public int takeProduct(int index, int takenQuantity) throws ServiceException {
-
-        if(!(index >= 1 && index <= shopProducts.size()))
-            throw new ServiceException("Please Choose A Valid Product");
-
-        int finalTaken = takenQuantity;
-        Product product = shopProducts.get(index - 1);
-
-        try {
-            product.setQuantity(product.getQuantity() - takenQuantity);
-        }
-        catch (Exception e) {
-            if(product.getQuantity() == 0)
-                throw new ServiceException("Sorry! Out Of Stock for " + product.getName());
-            else{
-
-                finalTaken = product.getQuantity();
-
-                try{
-                    product.setQuantity(0);
-                } catch (Exception e2){
-                    throw new ServiceException("Unexpected Error!!!!");
-                }
-
-            }
-        }
-
-
-        return finalTaken;
-    }
-
 }

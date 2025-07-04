@@ -12,18 +12,41 @@ public class Cart {
     private ArrayList<CartItem> cartItems;
     private Shop shop;
 
-    public Cart(Shop shop) {
-        this.shop = shop;
+    public Cart() {
         this.cartErrors = new ArrayList<>();
         this.cartItems = new ArrayList<>();
     }
 
-    public void add(int index, int takenQuantity) throws ServiceException {
-
-        Product product = shop.getProductDetails(index);
+    private int takeProduct(Product product, int takenQuantity) throws Exception{
+        int finalTaken = takenQuantity;
 
         try {
-            int actualTakenQuantity = shop.takeProduct(index, takenQuantity);
+            product.setQuantity(product.getQuantity() - takenQuantity);
+        }
+        catch (Exception e) {
+            if(product.getQuantity() == 0)
+                throw new ServiceException("Sorry! Out Of Stock for " + product.getName());
+            else{
+
+                finalTaken = product.getQuantity();
+
+                try{
+                    product.setQuantity(0);
+                } catch (Exception e2){
+                    throw new ServiceException("Unexpected Error!!!!");
+                }
+
+            }
+        }
+
+
+        return finalTaken;
+    }
+
+    public void add(Product product, int takenQuantity) throws ServiceException {
+
+        try {
+            int actualTakenQuantity = takeProduct(product, takenQuantity);
 
             if(actualTakenQuantity < takenQuantity)
                 cartErrors.add("Couldn't Take " + takenQuantity + " from " + product.getName() + " so you got only " + actualTakenQuantity);

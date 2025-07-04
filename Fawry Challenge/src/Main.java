@@ -3,6 +3,7 @@ import com.delivery.Cart;
 import com.delivery.CartItem;
 import com.delivery.ShippingService;
 import com.delivery.Shop;
+import com.product.base.Product;
 import com.product.base.Shippable;
 
 import java.util.ArrayList;
@@ -93,15 +94,29 @@ public class Main {
             Shop shop = new Shop();
             shop.loadAvailableProducts();
             shop.displayShopProducts();
-            shop.takeProduct(1, 1);
-            Cart cart = new Cart(shop);
-            cart.add(1, 1);
-            cart.add(2, 50);
-            cart.add(2, 1);
-            cart.add(9, 1);
-            cart.add(10, 1);
-            cart.add(7, 2);
-            cart.add(8, 3);
+
+            Cart cart = new Cart();
+
+            Product product = shop.getProduct(1);
+            cart.add(product, 1);
+
+            product = shop.getProduct(2);
+            cart.add(product, 50);
+
+            product = shop.getProduct(2);
+            cart.add(product, 3);
+
+            product = shop.getProduct(9);
+            cart.add(product, 1);
+
+            product = shop.getProduct(10);
+            cart.add(product, 1);
+
+            product = shop.getProduct(7);
+            cart.add(product, 2);
+
+            product = shop.getProduct(8);
+            cart.add(product, 3);
 
             checkout(cart, customer);
 
