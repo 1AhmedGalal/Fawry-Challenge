@@ -1,6 +1,5 @@
-package com.delivery;
+package com.delivery.shipping;
 
-import com.product.base.Product;
 import com.product.base.Shippable;
 
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ public class ShippingService
         this.shippables = shippables;
     }
 
-    // I was originally trying to print here, but I am trying to do separation of concern
     public void performShipping() {
         double totalWeight = 0;
 

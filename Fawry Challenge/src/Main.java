@@ -1,8 +1,8 @@
 import com.customer.Customer;
-import com.delivery.Cart;
-import com.delivery.CartItem;
-import com.delivery.ShippingService;
-import com.delivery.Shop;
+import com.delivery.cart.Cart;
+import com.delivery.cart.CartItem;
+import com.delivery.shipping.ShippingService;
+import com.delivery.shop.Shop;
 import com.product.base.Product;
 import com.product.base.Shippable;
 
@@ -12,18 +12,31 @@ import java.util.ArrayList;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
-    static ArrayList<CartItem> cartItems = null;
-    static double subtotal = 0;
-    static double shippingFees = 0;
-    static final double SHIPPING_PRICE = 100.64;
+    //I am Assuming that shipping each gram costs this constant value :)
+    static final double SHIPPING_PRICE_PER_GRAM = 100.64;
 
-    public static void checkout(Cart cart, Customer customer) {
+    static class PaidMoney{
+        double subtotal = 0;
+        double shippingFees = 0;
 
-        System.out.println("Errors Made By User While Adding To Cart: ");
+        public void addToSubTotal(double amount){
+            subtotal += amount;
+        }
 
-        var errors = cart.getCartErrors();
-        cartItems = cart.getCartItems();
+        public void addSTohippingFees(double amount){
+            shippingFees += amount;
+        }
 
+        public double getSubtotal() {
+            return subtotal;
+        }
+
+        public double getShippingFees() {
+            return shippingFees;
+        }
+    }
+
+    private static void checkUserBalance(ArrayList<String> errors, ArrayList<CartItem> cartItems, Customer customer, PaidMoney paidMoney, ArrayList<Shippable> shippables){
         if(cartItems.isEmpty())
             errors.add("Cart IS EMPTY!!");
 
@@ -33,36 +46,54 @@ public class Main {
 
             try{
                 customer.setBalance(customer.getBalance() - item.getTotalPrice());
-                if(item.getProduct() instanceof Shippable)
-                    customer.setBalance(customer.getBalance() - ((Shippable) item.getProduct()).getWeight() * SHIPPING_PRICE);
+
+                if(item.getProduct() instanceof Shippable){
+                    double currentShippingFee = ((Shippable) item.getProduct()).getWeight() * SHIPPING_PRICE_PER_GRAM;
+                    customer.setBalance(customer.getBalance() - currentShippingFee);
+                    paidMoney.addSTohippingFees(currentShippingFee);
+                    shippables.add((Shippable) item.getProduct());
+                }
+
+                paidMoney.addToSubTotal(item.getTotalPrice());
+
             }
             catch (Exception e){
 
                 errors.add("Customer Can't Buy " + item.getQuantityBought() + " Items from " + item.getProduct().getName()
-                            + " Because Customer Has " + customer.getBalance() +" Now, And That Item Needs More");
+                        + " Because Customer Has " + customer.getBalance() +" Now, And That Item Needs More");
 
                 cartItems.remove(item);
                 --idx;
 
             }
         }
+    }
 
-        if(!errors.isEmpty())
+    public static void checkout(Cart cart, Customer customer) {
+
+        //---------------------------------------------------
+
+        //initial values
+        ArrayList<CartItem> cartItems = cart.getCartItems();
+        ArrayList<String> errors = cart.getCartErrors();
+        PaidMoney paidMoney = new PaidMoney();
+        ArrayList<Shippable> shippables = new ArrayList<>();
+
+        //---------------------------------------------------
+
+        System.out.println("Errors Made By User While Adding To Cart: ");
+
+        checkUserBalance(errors, cartItems, customer, paidMoney, shippables);
+
+        if(!errors.isEmpty()){
             for(String error : errors)
                 System.out.println(error);
+        }else {
+            System.out.println("No Errors Found");
+        }
+
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-
-        ArrayList<Shippable> shippables = new ArrayList<>();
-        for(var item : cartItems)
-        {
-            subtotal += item.getTotalPrice();
-
-            if(item.getProduct() instanceof Shippable){
-                shippingFees += ((Shippable) item.getProduct()).getWeight() * SHIPPING_PRICE * item.getQuantityBought();
-                shippables.add((Shippable) item.getProduct());
-            }
-        }
 
         ShippingService shippingService = new ShippingService(shippables);
         shippingService.performShipping();
@@ -76,9 +107,9 @@ public class Main {
         }
         System.out.println();
 
-        double totalPaid = subtotal + shippingFees;
-        System.out.println("subtotal = " + subtotal);
-        System.out.println("shipping Fees = " + shippingFees);
+        double totalPaid = paidMoney.getSubtotal() + paidMoney.getShippingFees();
+        System.out.println("subtotal = " + paidMoney.getSubtotal());
+        System.out.println("shipping Fees = " + paidMoney.getShippingFees());
         System.out.println("Total Paid = " + totalPaid);
         System.out.println("Remaining Customer Balance = " + customer.getBalance());
 

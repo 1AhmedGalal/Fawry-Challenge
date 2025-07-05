@@ -1,4 +1,4 @@
-package com.delivery;
+package com.delivery.cart;
 
 import com.product.base.Product;
 
@@ -8,7 +8,9 @@ public class CartItem {
     private Product product;
     private double totalPrice;
 
-    public CartItem(int quantityBought, Product product, double totalPrice) {
+    CartItem(int quantityBought, Product product, double totalPrice) {
+        //no need to validate here bcz I know I will get them in a valid state from Cart
+        //and this class constructor is visible in this package only :)
         this.quantityBought = quantityBought;
         this.product = product;
         this.totalPrice = totalPrice;

@@ -1,5 +1,7 @@
-package com.delivery;
+package com.delivery.cart;
 
+import com.delivery.ServiceException;
+import com.delivery.shop.Shop;
 import com.product.base.Expirable;
 import com.product.base.Product;
 
@@ -10,7 +12,6 @@ public class Cart {
 
     private ArrayList<String> cartErrors;
     private ArrayList<CartItem> cartItems;
-    private Shop shop;
 
     public Cart() {
         this.cartErrors = new ArrayList<>();

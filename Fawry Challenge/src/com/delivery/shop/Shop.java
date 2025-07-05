@@ -1,5 +1,6 @@
-package com.delivery;
+package com.delivery.shop;
 
+import com.delivery.ServiceException;
 import com.product.actual.*;
 import com.product.base.Expirable;
 import com.product.base.Product;
